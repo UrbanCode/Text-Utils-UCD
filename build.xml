@@ -1,0 +1,142 @@
+<!--
+
+/**
+ * © Copyright IBM Corporation 2014.  
+ * This is licensed under the following license.
+ * The Eclipse Public 1.0 License (http://www.eclipse.org/legal/epl-v10.html)
+ * U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. 
+ */
+
+-->
+
+	<project name="plugin-text-utils" default="main" basedir=".">
+
+		<!--<dirname property="example" file="${ant.file.example}" />-->
+		<dirname property="workspace" file="${example}" />
+
+		<!-- assumes the build.properties is set via the command line ANT invocation -->
+		<!--<property name="build.properties" value="build.properties" />-->
+		<property file="${workspace}/builder/ant-common/${build.properties}" />
+
+		<property name="project" value="" />
+
+		<property name="build.version" value="02" />
+		<property name="deployPluginArchiveName" value="releases/plugin-text-utils_v${build.version}.zip" />
+		
+		<property name="build.dir" value="${basedir}/build" />
+		<property name="src.dir" value="${basedir}/src" />
+		<property name="plugin.dir" value="${basedir}/plugin" />
+		<property name="license.dir" value="${basedir}/license" />
+		<property name="doc.dir" value="${basedir}/doc" />
+		<property name="bin.dir" value="${basedir}/bin" />
+		<property name="lib.dir" value="${basedir}/lib" />
+		<property name="scripts.dir" value="${basedir}/scripts" />
+		<property name="imports.dir" value="${basedir}/imports" />
+		
+		<target name="main" depends="clean, copyDependencies, compileBinary, buildZip" />
+		
+		<path id="classpath.build">
+			<fileset dir="${workspace}">
+				<include name="lib/**/*.jar" />
+			</fileset>
+		</path>
+		
+		<pathconvert property="manifest.classpath" pathsep=" ">
+		  <path refid="classpath.build"/>
+		  <mapper>
+		    <chainedmapper>
+		       <flattenmapper/>
+		       <globmapper from="*.jar" to="lib/*.jar"/>
+		    </chainedmapper>
+		  </mapper>
+		</pathconvert>
+		
+		<target name="compileBinary">
+			<mkdir dir="${bin.dir}" />
+			
+			<javac debug="true" destdir="${bin.dir}" target="1.6" source="1.6">
+				<src path="${src.dir}/java" />
+				<classpath refid="classpath.build" />
+			</javac>
+						
+			<!-- <jar destfile="${build.dir}/GitSourceConfig.jar" basedir="${bin.dir}">
+			     <manifest>
+			       <attribute name="Main-Class" value="com.urbancode.air.plugin.Main"/>
+			       <attribute name="Class-Path" value="${manifest.classpath}"/>
+			     </manifest>
+			</jar> -->
+			<!-- <delete dir="${bin.dir}" /> -->
+		</target>
+				
+		<!-- Copy in the dependencies -->
+		<target name="copyDependencies">
+
+			<!-- inputs (info, upgrade) -->
+			<copy todir="${build.dir}">
+				<fileset dir="${plugin.dir}">
+				</fileset>
+			</copy>
+						
+			<!-- <mkdir dir="${build.dir}/bin"/> -->
+			
+			<copy todir="${build.dir}">
+				<fileset dir="${scripts.dir}">					
+				</fileset>
+			</copy>
+			
+			<!-- Not Need
+			<mkdir dir="${build.dir}/license"/>
+			<copy todir="${build.dir}/license">
+				<fileset dir="${license.dir}">
+					<include name="EPL.txt" />
+				</fileset>
+			</copy>
+			-->
+
+			<mkdir dir="${build.dir}/lib"/>
+			<copy todir="${build.dir}/lib">
+				<fileset dir="${lib.dir}">
+				</fileset>
+			</copy>
+			
+			<!-- Not Needed
+			<mkdir dir="${build.dir}/imports"/>
+			<copy todir="${build.dir}/imports">
+				<fileset dir="${imports.dir}">
+				</fileset>
+			</copy>
+			-->
+			
+			<!-- Not Needed
+			<mkdir dir="${build.dir}/doc"/>
+			<copy todir="${build.dir}/doc">
+				<fileset dir="${doc.dir}">
+					<include name="HowTo.html" />
+				</fileset>
+			</copy>
+			-->
+			<!-- Not Needed
+			<mkdir dir="${build.dir}/java"/>
+			-->
+			
+			<!-- copy Groovy dependencies -->
+			<mkdir dir="${build.dir}/classes"/>
+			<copy todir="${build.dir}/classes">
+                <fileset dir="${src.dir}/classes">                  
+                </fileset>
+            </copy>
+		</target>
+
+		<!-- Build the actual zip file that gets uploaded to uDeploy -->
+		<target name="buildZip">
+			<zip destfile="${deployPluginArchiveName}" basedir="${build.dir}" update="false"/>
+		</target>
+
+		<!-- Clean up the build directory -->
+		<target name="clean">
+			<delete dir="build" />
+			<mkdir dir="build" />
+			<delete file="${deployPluginArchiveName}" />
+		</target>
+
+	</project>

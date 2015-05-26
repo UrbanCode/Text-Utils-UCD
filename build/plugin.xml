@@ -89,7 +89,7 @@
                      description="The text to be appended to the file."/>
       </property>
 	  <property name="startOnNewLine">
-        <property-ui type="checkBox">
+        <property-ui type="checkBox"
                      label="Start on new line?"
                      description="If true, add a new line before the text string."/>
       </property>

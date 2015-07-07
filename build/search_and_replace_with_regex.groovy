@@ -24,7 +24,10 @@ println "Replacement string : $replacementString"
 
 File file = new File(filePath)
 
-println "Match(es) found: " + file.text.contains(searchString)
+def matcher = file.text =~ /$searchString/
+println "Number of match(es) found: " + matcher.getCount()
+println "Matched the following lines:"
+file.text.findAll(/$searchString/).each { match -> println "$match" }
 
 contents = file.text.replaceAll(searchString, replacementString)
 file.write(contents)

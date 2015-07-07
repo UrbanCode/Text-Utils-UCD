@@ -1,4 +1,3 @@
-/*
 final def workDir = new File('.').canonicalFile
 final def props = new Properties()
 final def inputPropsFile = new File(args[0])
@@ -9,19 +8,17 @@ try {
 catch (IOException e) {
     throw new RuntimeException(e)
 }
-*/
 
 
-final def folderPath = 'C:/test/'
+//final def filePath = 'C:/test/'
 
-/*
 
-final def folderPath = props['folderPath']
+final def filePath = props['filePath']
 final def searchString = props['searchString']
 
-println "Checking file ${folderPath} for searching string : ${searchString}"
+println "Checking file ${filePath} for searching string : ${searchString}"
 
-File file = new File(folderPath)
+File file = new File(filePath)
 
 if (!file.exists()) {
 	println "File does not exist"

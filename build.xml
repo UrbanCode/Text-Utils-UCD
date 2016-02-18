@@ -20,7 +20,7 @@
 
 		<property name="project" value="" />
 
-		<property name="build.version" value="2.00" />
+		<property name="build.version" value="3.00" />
 		<property name="deployPluginArchiveName" value="releases/plugin-text-utils_v${build.version}.zip" />
 		
 		<property name="build.dir" value="${basedir}/build" />

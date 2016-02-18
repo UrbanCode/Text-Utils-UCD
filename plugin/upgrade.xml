@@ -16,4 +16,7 @@
 	<migrate to-version="2">
 	  <migrate-command name="Append text to a file"/>
 	</migrate>
+	<migrate to-version="3">
+	  <migrate-command name="Convert file from XML to JSON"/>
+	</migrate>	
 </plugin-upgrade>

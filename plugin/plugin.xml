@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+ - © Copyright IBM Corporation 2014, 2016.
+ - This is licensed under the following license.
+ - The Eclipse Public 1.0 License (http://www.eclipse.org/legal/epl-v10.html)
+ - U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+-->
 <plugin xmlns="http://www.urbancode.com/PluginXMLSchema_v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <header>
-    <identifier id="com.urbancode.air.plugin.TextUtils" name="TextUtils" version="3"/>
+    <identifier id="com.urbancode.air.plugin.TextUtils" name="TextUtils" version="4"/>
     <description>The TextUtils plugin provides functionality to manipulate text within files.</description>
     <tag>Utilities/TextUtils</tag>
   </header>
@@ -34,7 +40,7 @@
      ]]></post-processing>
     <command program="${GROOVY_HOME}/bin/groovy">
       <arg value="-cp"/>
-      <arg path="classes"/>
+      <arg path="classes:lib/groovy-plugin-utils-1.0.jar"/>
       <arg file="search_and_replace.groovy"/>
       <arg file="${PLUGIN_INPUT_PROPS}"/>
       <arg file="${PLUGIN_OUTPUT_PROPS}"/>
@@ -69,7 +75,7 @@
      ]]></post-processing>
     <command program="${GROOVY_HOME}/bin/groovy">
       <arg value="-cp"/>
-      <arg path="classes"/>
+      <arg path="classes:lib/groovy-plugin-utils-1.0.jar"/>
       <arg file="search_and_replace_with_regex.groovy"/>
       <arg file="${PLUGIN_INPUT_PROPS}"/>
       <arg file="${PLUGIN_OUTPUT_PROPS}"/>
@@ -104,7 +110,7 @@
      ]]></post-processing>
     <command program="${GROOVY_HOME}/bin/groovy">
       <arg value="-cp"/>
-      <arg path="classes"/>
+      <arg path="classes:lib/groovy-plugin-utils-1.0.jar"/>
       <arg file="append_text.groovy"/>
       <arg file="${PLUGIN_INPUT_PROPS}"/>
       <arg file="${PLUGIN_OUTPUT_PROPS}"/>
@@ -134,7 +140,7 @@
      ]]></post-processing>
     <command program="${GROOVY_HOME}/bin/groovy">
       <arg value="-cp"/>
-      <arg path="classes"/>
+      <arg path="classes:lib/groovy-plugin-utils-1.0.jar"/>
       <arg file="check_text_exists.groovy"/>
       <arg file="${PLUGIN_INPUT_PROPS}"/>
       <arg file="${PLUGIN_OUTPUT_PROPS}"/>
@@ -152,7 +158,7 @@
         <property-ui type="textBox"
                      label="Output JSON File path"
                      description="The full path for the new JSON formatted file"/>
-      </property>      
+      </property>
 	</properties>
     <post-processing><![CDATA[
         if (properties.get("exitCode") != 0) {
@@ -164,10 +170,10 @@
      ]]></post-processing>
     <command program="${GROOVY_HOME}/bin/groovy">
       <arg value="-cp"/>
-      <arg path="classes:lib/json-20160212.jar"/>
+      <arg path="classes:lib/json-20160212.jar:lib/groovy-plugin-utils-1.0.jar"/>
       <arg file="convert_file_xml_to_json.groovy"/>
       <arg file="${PLUGIN_INPUT_PROPS}"/>
       <arg file="${PLUGIN_OUTPUT_PROPS}"/>
     </command>
-  </step-type>  
+  </step-type>
 </plugin>

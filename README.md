@@ -1,17 +1,33 @@
-This README.md file is displayed on your project page. You should edit this 
-file to describe your project, including instructions for building and 
-running the project, pointers to the license under which you are making the 
-project available, and anything else you think would be useful for others to
-know.
+# IBM UrbanCode Deploy Text Utils Plugin
+---
+Note: This is not the plugin distributable! This is the source code. To find the installable plugin, go into the 'Releases' tab, and download a stable version.
 
-We have created an empty license.txt file for you. Well, actually, it says,
-"<Replace this text with the license you've chosen for your project.>" We 
-recommend you edit this and include text for license terms under which you're
-making your code available. A good resource for open source licenses is the 
-[Open Source Initiative](http://opensource.org/).
+### License
+This plug-in is protected under the [Eclipse Public 1.0 License](http://www.eclipse.org/legal/epl-v10.html)
 
-Be sure to update your project's profile with a short description and 
-eye-catching graphic.
+### Compatibility
+	This plug-in requires version 6.1.1 or later of IBM UrbanCode Deploy.
 
-Finally, consider defining some sprints and work items in Track & Plan to give 
-interested developers a sense of your cadence and upcoming enhancements.
+### Installation
+	The packaged zip is located in the releases folder. No special steps are required for installation.
+	See Installing plug-ins in IBM UrbanCode Deploy. Download this zip file if you wish to skip the
+	manual build step. Otherwise, download the entire Text-Utils-UCD and
+	run the "ant" command in the top level folder. This should compile the code and create
+	a new distributable zip within the releases folder. Use this command if you wish to make
+	your own changes to the plugin.
+
+### History
+    Version 4
+        Community GitHub Release
+
+### How to build the plugin from eclipse client:
+
+1. Expand the Groovy project that you checked-out from example template.
+2. Open build.xml file and execute it as an Ant Build operation (Run As -> Ant Build)
+3. The built plugin is located at releases/Text-Utils-UCD-vdev.zip
+
+### How to build the plugin from command line:
+
+1. Navigate to the base folder of the project through command line.
+2. Make sure that there is build.xml file there, and then execute 'ant' command.
+3. The built plugin is located at releases/Text-Utils-UCD-vdev.zip

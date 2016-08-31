@@ -7,9 +7,9 @@
 -->
 <plugin xmlns="http://www.urbancode.com/PluginXMLSchema_v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <header>
-    <identifier id="com.urbancode.air.plugin.TextUtils" name="TextUtils" version="4"/>
-    <description>The TextUtils plugin provides functionality to manipulate text within files.</description>
-    <tag>Utilities/TextUtils</tag>
+    <identifier id="com.urbancode.air.plugin.TextUtils" name="Text Utils" version="4"/>
+    <description>The Text Utils plugin provides functionality to manipulate text within files.</description>
+    <tag>Utilities/Text Utils</tag>
   </header>
   <step-type name="Search and Replace">
     <description>Search for a string, replace it with another and write to the file.</description>

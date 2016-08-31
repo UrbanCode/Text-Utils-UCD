@@ -35,7 +35,7 @@
         <property name="releases.report.dir"    value="${releases.dir}/report" />
 
 
-        <property name="plugin" value="Text-Util-UCD" />
+        <property name="plugin" value="Text-Utils-UCD" />
         <property name="version" value="dev" />
         <property name="pluginDist" value="${releases.dir}/${plugin}-v${version}.zip" />
 

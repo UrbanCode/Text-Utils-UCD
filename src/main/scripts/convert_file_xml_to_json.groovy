@@ -35,6 +35,6 @@ String jsonText = xmlJSONObj.toString(4);
 File jsonFile = new File(jsonFilePath)
 jsonFile.write(jsonText);
 
-println "XML file " + xmlFilePath " successfully converted to JSON file " jsonFilePath
+println "XML file " + xmlFilePath + " successfully converted to JSON file " + jsonFilePath
 
 System.exit(0)

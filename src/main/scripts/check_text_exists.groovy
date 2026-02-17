@@ -5,9 +5,9 @@
  *  U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
  */
 
-final def workDir = new File('.').canonicalFile
-final def props = new Properties()
-final def inputPropsFile = new File(args[0])
+def workDir = new File('.').canonicalFile
+def props = new Properties()
+def inputPropsFile = new File(args[0])
 try {
     inputPropsStream = new FileInputStream(inputPropsFile)
     props.load(inputPropsStream)
@@ -20,8 +20,8 @@ catch (IOException e) {
 //final def filePath = 'C:/test/'
 
 
-final def filePath = props['filePath']
-final def searchString = props['searchString']
+def filePath = props['filePath']
+def searchString = props['searchString']
 
 println "Checking file ${filePath} for searching string : ${searchString}"
 

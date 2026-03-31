@@ -5,9 +5,9 @@
  *  U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
  */
 
-final def workDir = new File('.').canonicalFile
-final def props = new Properties()
-final def inputPropsFile = new File(args[0])
+def workDir = new File('.').canonicalFile
+def props = new Properties()
+def inputPropsFile = new File(args[0])
 try {
     inputPropsStream = new FileInputStream(inputPropsFile)
     props.load(inputPropsStream)
@@ -22,9 +22,9 @@ final def searchString = "E:\\Software\\IBM\\WebSphere\\AppServer\\profiles\\Mye
 final def replacementString = "E:\\Software\\IBM\\HTTPServer\\htdocs\\"
 */
 
-final def filePath = props['filePath']
-final def searchString = props['searchString']
-final def replacementString = props['replacementString']
+def filePath = props['filePath']
+def searchString = props['searchString']
+def replacementString = props['replacementString']
 
 println "Search string : $searchString"
 println "Replacement string : $replacementString"

@@ -5,9 +5,9 @@
  *  U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
  */
 
-final def workDir = new File('.').canonicalFile
-final def props = new Properties()
-final def inputPropsFile = new File(args[0])
+def workDir = new File('.').canonicalFile
+def props = new Properties()
+def inputPropsFile = new File(args[0])
 try {
     inputPropsStream = new FileInputStream(inputPropsFile)
     props.load(inputPropsStream)
@@ -20,9 +20,9 @@ catch (IOException e) {
 //final def text = "appended text"
 //final def startOnNewLine = false
 
-final def filePath = props['filePath'];
-final def text = props['text'];
-final def startOnNewLine = props['startOnNewLine'].toBoolean()
+def filePath = props['filePath'];
+def text = props['text'];
+def startOnNewLine = props['startOnNewLine'].toBoolean()
 
 println "File path: $filePath"
 println "Text: $text"

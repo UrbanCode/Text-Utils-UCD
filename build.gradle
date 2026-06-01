@@ -1,85 +1,87 @@
-/*
- * © Copyright IBM Corporation 2016.
- * This is licensed under the following license.
- * The Eclipse Public 1.0 License (http://www.eclipse.org/legal/epl-v10.html)
- * U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
- */
-
 plugins {
     id 'java'
+    id 'groovy'
 }
 
-version = project.findProperty('version') ?: 'dev'
+defaultTasks 'main'
 
+def version = project.findProperty('version') ?: 'dev'
 def pluginName  = 'Text-Utils-UCD'
 
-def libBuildClassesDir = layout.projectDirectory.dir('lib/build/classes')
-def libTestJavaDir     = layout.projectDirectory.dir('lib/test/java')
-def libBuildDir        = layout.projectDirectory.dir('lib/build')
-def libTestDir         = layout.projectDirectory.dir('lib/test')
+def libDir = layout.projectDirectory.dir('lib')
+def libBuildDir = layout.projectDirectory.dir('lib/build')
+def libTestDir = layout.projectDirectory.dir('lib/test')
 
 repositories {
     mavenCentral()
 }
 
 configurations {
-    buildConf   
-    testConf    
+    buildConf
+    testConf
+    compileClasspath.extendsFrom implementation
 }
 
 dependencies {
-    
-    implementation 'com.ibm.urbancode.plugins:groovy-plugin-utils:1.0'
-    implementation 'org.json:json:20160212'
+    implementation('com.ibm.urbancode.plugins:groovy-plugin-utils:+') {transitive = false}
+    implementation('org.json:json:+') {transitive = false}
 
-    buildConf 'org.codehaus.groovy:groovy-all:3.0.9'
-    buildConf 'org.codehaus.groovy:groovy-ant:3.0.9'
+    buildConf 'org.codehaus.groovy:groovy-all:1.8.8'
 
-    testConf          'junit:junit:4.11'
-    testConf          'org.hamcrest:hamcrest-core:1.3'
-    testImplementation 'junit:junit:4.11'
+    testConf 'junit:junit:4.13.1'
+    testConf 'org.hamcrest:hamcrest-core:1.3'
+
+    testImplementation 'junit:junit:4.13.1'
     testImplementation 'org.hamcrest:hamcrest-core:1.3'
 }
 
 sourceSets {
     main {
         java { srcDirs = ['src/main/java'] }
+        groovy { srcDirs = ['src/main/groovy'] }
     }
     test {
         java { srcDirs = ['src/test/java'] }
+        groovy { srcDirs = ['src/test/groovy'] }
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+tasks.register('main') {
+    dependsOn 'cleanBuild', 'resolve', 'compileClasses', 'buildPlugin', 'dist', 'runTests'
+    doLast {
+        println 'Plugin build complete!'
+    }
 }
 
-tasks.named('compileJava') {
-    classpath += configurations.buildConf
-    destinationDirectory.set(libBuildClassesDir)
-}
+tasks.register('cleanBuild') {
+    delete layout.buildDirectory
+    delete 'releases'
+    delete 'lib'
 
-tasks.named('compileTestJava') {
-    classpath += files(libBuildClassesDir)
-    classpath += configurations.testConf
-    destinationDirectory.set(libTestJavaDir)
+    doLast {
+        mkdir layout.buildDirectory.get().asFile
+    }
 }
 
 tasks.register('resolve') {
-    group       = 'build'
-    description = 'Resolve and copy dependencies to lib dirs'
-    doLast {
+    dependsOn 'cleanBuild'
+    doFirst {
+        mkdir libDir.asFile
         mkdir libBuildDir.asFile
         mkdir libTestDir.asFile
+    }
+
+    doLast {
         copy {
             from configurations.runtimeClasspath
-            into layout.projectDirectory.dir('lib').asFile
+            into libDir.asFile
         }
+
         copy {
             from configurations.buildConf
             into libBuildDir.asFile
         }
+
         copy {
             from configurations.testConf
             into libTestDir.asFile
@@ -87,41 +89,26 @@ tasks.register('resolve') {
     }
 }
 
-tasks.register('cleanBuild') {
-    group       = 'build'
-    description = 'Delete build dir, dist zip, and compiled lib dirs'
-    doLast {
-        delete layout.buildDirectory.get().asFile
-        mkdir  layout.buildDirectory.get().asFile
-        delete layout.projectDirectory.file("releases/${pluginName}-v${version}.zip").asFile
-        delete libTestJavaDir.asFile
-        delete libBuildClassesDir.asFile
-    }
-}
-
-tasks.named('compileJava') { dependsOn 'resolve' }
-
 tasks.register('compileClasses') {
-    group       = 'build'
-    description = 'Compile Java classes (equivalent to Ant compile-classes)'
-    dependsOn 'resolve', 'compileJava'
-    doLast {
-        println 'Classes compiled successfully'
-    }
-}
+    dependsOn 'resolve', 'compileGroovy', 'compileJava'
 
-tasks.register('compileTests') {
-    group       = 'build'
-    description = 'Compile test Java classes (equivalent to Ant compile-tests)'
-    dependsOn 'compileClasses', 'compileTestJava'
+    doLast {
+        mkdir("$projectDir/lib/build/classes")
+
+        copy {
+            from sourceSets.main.output.classesDirs
+            into "$projectDir/lib/build/classes"
+        }
+
+        println 'Classes compiled successfully'
+    }   
 }
 
 tasks.register('buildPlugin') {
-    group       = 'build'
-    description = 'Assemble plugin directory structure (equivalent to Ant build)'
-    dependsOn 'resolve'
+    dependsOn 'resolve', 'compileClasses'
+
     doLast {
-        def pluginOut = layout.buildDirectory.dir('plugin').get().asFile
+        def buildPluginDir = layout.buildDirectory.dir('plugin').get().asFile
 
         // plugin XML files + scripts
         copy {
@@ -131,77 +118,82 @@ tasks.register('buildPlugin') {
                 include 'plugin.xml'
             }
             from 'src/main/scripts'
-            into pluginOut
+            into buildPluginDir
         }
 
-        // license/EPL.txt
+        // license
         copy {
-            from('license') { include 'EPL.txt' }
-            into new File(pluginOut, 'license')
+            from('license') {
+                include 'EPL.txt'
+            }
+            into "$buildPluginDir/license"
         }
 
-        // doc/
+        // documentation
         copy {
             from('doc') {
                 include 'HowTo.html'
-                include 'UCD Siebel Plugin DesignDocument.docx'
             }
-            into new File(pluginOut, 'doc')
+            into "$buildPluginDir/doc"
         }
 
+        // libraries (excluding build and test)
         copy {
             from('lib') {
                 exclude '**/build/**'
                 exclude '**/test/**'
             }
-            into new File(pluginOut, 'lib')
+            into "$buildPluginDir/lib"
         }
 
+        // groovy source files
         copy {
-            from('src/main/groovy') { include '**/*.groovy' }
-            from(libBuildClassesDir.asFile) { include '**/*.class' }
-            into new File(pluginOut, 'classes')
+            from('src/main/groovy') {
+                include '**/*.groovy'
+            }
+            into "$buildPluginDir/classes"
+        }
+
+        // compiled java classes
+        copy {
+            from('lib/build/classes') {
+                include '**/*.class'
+            }
+            into "$buildPluginDir/classes"
         }
     }
 }
 
 tasks.register('dist', Zip) {
-    group       = 'build'
-    description = 'Create distribution ZIP (equivalent to Ant dist)'
-    dependsOn 'buildPlugin'
+    description = 'Create distribution zip'
+    dependsOn 'resolve', 'buildPlugin'
     archiveFileName = "${pluginName}-v${version}.zip"
-    destinationDirectory.set(layout.projectDirectory.dir('releases'))
-    from layout.buildDirectory.dir('plugin')
-}
-
-tasks.named('test') {
-    useJUnit()
-    classpath += configurations.testConf
-    classpath += files(libTestJavaDir)
-    reports {
-        junitXml.outputLocation.set(layout.projectDirectory.dir('releases/report'))
-        html.outputLocation.set(layout.projectDirectory.dir('releases/report/html'))
-    }
+    destinationDirectory = file('releases')
+    from("$buildDir/plugin")
 }
 
 tasks.register('runTests') {
-    group       = 'verification'
-    description = 'Compile and run JUnit tests (equivalent to Ant run-tests)'
+    description = 'Compile and run JUnit tests ()'
     dependsOn 'compileTests', 'test'
 }
 
-tasks.register('main') {
-    group       = 'build'
-    description = 'Full build: clean → resolve → compile → buildPlugin → dist'
-    dependsOn 'cleanBuild', 'resolve', 'compileClasses', 'buildPlugin', 'dist'
-    doLast {
-        println 'Plugin build complete!'
-    }
+tasks.register('compileTests') {
+    description = 'Compile test Java classes (equivalent to Ant compile-tests)'
+    dependsOn 'compileClasses', 'compileTestJava'
 }
 
-tasks.named('resolve')       { mustRunAfter 'cleanBuild' }
-tasks.named('compileClasses'){ mustRunAfter 'resolve'    }
-tasks.named('buildPlugin')   { mustRunAfter 'compileClasses' }
-tasks.named('dist')          { mustRunAfter 'buildPlugin' }
+test {
+    useJUnit()
 
-defaultTasks 'main'
+    reports {
+        junitXml.required = true
+        html.required = true
+
+        junitXml.outputLocation = layout.projectDirectory.dir("releases/report/xml")
+        html.outputLocation = layout.projectDirectory.dir("releases/report/html")
+    }
+
+    testLogging {
+        events "passed", "failed", "skipped"
+    }
+}

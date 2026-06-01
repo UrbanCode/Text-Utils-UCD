@@ -13,39 +13,34 @@ version = project.findProperty('version') ?: 'dev'
 
 def pluginName  = 'Text-Utils-UCD'
 
-// ── Directory references (mirrors Ant properties) ─────────────────────────────
 def libBuildClassesDir = layout.projectDirectory.dir('lib/build/classes')
 def libTestJavaDir     = layout.projectDirectory.dir('lib/test/java')
 def libBuildDir        = layout.projectDirectory.dir('lib/build')
 def libTestDir         = layout.projectDirectory.dir('lib/test')
 
-// ── Repositories & Configurations ─────────────────────────────────────────────
 repositories {
     mavenCentral()
 }
 
 configurations {
-    buildConf   // groovy-all + groovy-ant (build-time only)
-    testConf    // junit + hamcrest
+    buildConf   
+    testConf    
 }
 
 dependencies {
-    // default conf – runtime (from ivy.xml)
+    
     implementation 'com.ibm.urbancode.plugins:groovy-plugin-utils:1.0'
     implementation 'org.json:json:20160212'
 
-    // build conf (from ivy.xml)
     buildConf 'org.codehaus.groovy:groovy-all:3.0.9'
     buildConf 'org.codehaus.groovy:groovy-ant:3.0.9'
 
-    // test conf (from ivy.xml)
     testConf          'junit:junit:4.11'
     testConf          'org.hamcrest:hamcrest-core:1.3'
     testImplementation 'junit:junit:4.11'
     testImplementation 'org.hamcrest:hamcrest-core:1.3'
 }
 
-// ── Source sets ───────────────────────────────────────────────────────────────
 sourceSets {
     main {
         java { srcDirs = ['src/main/java'] }
@@ -60,7 +55,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-// ── Compile configuration ─────────────────────────────────────────────────────
 tasks.named('compileJava') {
     classpath += configurations.buildConf
     destinationDirectory.set(libBuildClassesDir)
@@ -72,8 +66,6 @@ tasks.named('compileTestJava') {
     destinationDirectory.set(libTestJavaDir)
 }
 
-// ── resolve target ────────────────────────────────────────────────────────────
-// Equivalent to: ivy:retrieve for default, build, and test configurations
 tasks.register('resolve') {
     group       = 'build'
     description = 'Resolve and copy dependencies to lib dirs'
@@ -95,7 +87,6 @@ tasks.register('resolve') {
     }
 }
 
-// ── clean target ──────────────────────────────────────────────────────────────
 tasks.register('cleanBuild') {
     group       = 'build'
     description = 'Delete build dir, dist zip, and compiled lib dirs'
@@ -108,7 +99,6 @@ tasks.register('cleanBuild') {
     }
 }
 
-// ── compile-classes target ────────────────────────────────────────────────────
 tasks.named('compileJava') { dependsOn 'resolve' }
 
 tasks.register('compileClasses') {
@@ -120,14 +110,12 @@ tasks.register('compileClasses') {
     }
 }
 
-// ── compile-tests target ──────────────────────────────────────────────────────
 tasks.register('compileTests') {
     group       = 'build'
     description = 'Compile test Java classes (equivalent to Ant compile-tests)'
     dependsOn 'compileClasses', 'compileTestJava'
 }
 
-// ── build target ──────────────────────────────────────────────────────────────
 tasks.register('buildPlugin') {
     group       = 'build'
     description = 'Assemble plugin directory structure (equivalent to Ant build)'
@@ -161,7 +149,6 @@ tasks.register('buildPlugin') {
             into new File(pluginOut, 'doc')
         }
 
-        // lib/ (exclude build and test sub-dirs)
         copy {
             from('lib') {
                 exclude '**/build/**'
@@ -170,7 +157,6 @@ tasks.register('buildPlugin') {
             into new File(pluginOut, 'lib')
         }
 
-        // classes/ = groovy sources + compiled Java .class files
         copy {
             from('src/main/groovy') { include '**/*.groovy' }
             from(libBuildClassesDir.asFile) { include '**/*.class' }
@@ -179,7 +165,6 @@ tasks.register('buildPlugin') {
     }
 }
 
-// ── dist target ───────────────────────────────────────────────────────────────
 tasks.register('dist', Zip) {
     group       = 'build'
     description = 'Create distribution ZIP (equivalent to Ant dist)'
@@ -189,7 +174,6 @@ tasks.register('dist', Zip) {
     from layout.buildDirectory.dir('plugin')
 }
 
-// ── run-tests target ──────────────────────────────────────────────────────────
 tasks.named('test') {
     useJUnit()
     classpath += configurations.testConf
@@ -206,7 +190,6 @@ tasks.register('runTests') {
     dependsOn 'compileTests', 'test'
 }
 
-// ── main target (default) ─────────────────────────────────────────────────────
 tasks.register('main') {
     group       = 'build'
     description = 'Full build: clean → resolve → compile → buildPlugin → dist'
